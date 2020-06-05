@@ -1,16 +1,6 @@
-function createUser(req, res) {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    return res.json({
-      success: false,
-      message: "Invalid input"
-    })
-  } 
-  return res.json({
-    success: true,
-    message: "Account created successfully"
-  })
-}
+const pool = require('../database');
+const usersQueries = require('../queries/usersQueries');
+const generateHash = require('../utility').generateHash;
 
 function getUsers(req, res) {
   return res.json({
@@ -28,51 +18,85 @@ function getUsers(req, res) {
 }
 
 function getUser(req, res) {
-  const id = req.params.id;
-  if (id !== "1") {
-    return res.status(400).json({
-      success: false,
-      message: "Invalid userId"
-    });
-  }
-  return res.json({
-    success: true,
-    message: "User retrieved successfully",
-    data: {
-      userId: 1,
-      name: "test",
-      email: "test@gmail.com",
-      profilePicUrl: "test"
+  const userId = req.params.id;
+  pool.query(usersQueries.getUser({userId}), (err, rows, fields) => {
+    if (rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      })
     }
+    return res.json({
+      success: true,
+      message: "User retrieved successfully",
+      data: rows[0]
+    })
+  })
+}
+
+async function createUser(req, res) {
+  const { email, password, name, profilePicUrl } = req.body;
+  const hashedPassword = password ? await generateHash(password) : "";
+  const queryString = usersQueries.createUser({ email, password: hashedPassword, name, profilePicUrl });
+  if (!queryString) {
+    return res.json({
+      success: false,
+      message: "Missing input"
+    })
+  }
+  pool.query(queryString, (err, rows, fields) => {
+    if (err) {
+      return res.status(500).json({
+        success: false,
+        message: "DB error"
+      })
+    }
+    return res.json({
+      success: true,
+      message: "Account created successfully"
+    })
   });
 }
 
-function editUser(req, res) {
-  const id = req.params.id;
-  if (id !== "1") {
-    return res.status(400).json({
+async function editUser(req, res) {
+  const userId = req.params.id;
+  const { email, password, name, profilePicUrl } = req.body;
+  const hashedPassword = password ? await generateHash(password) : "";
+  const queryString = usersQueries.editUser({ userId, email, password: hashedPassword, name, profilePicUrl });
+  if (!queryString) {
+    return res.json({
       success: false,
-      message: "Invalid userId"
-    });
+      message: "No edit"
+    })
   }
-  return res.json({
-    success: true,
-    message: "User edited successfully",
-  });
+  pool.query(queryString, (err, rows, fields) => {
+    if (err) {
+      return res.status(500).json({
+        success: false,
+        message: "DB error"
+      })
+    }
+    return res.json({
+      success: true,
+      message: "User edited successfully"
+    })
+  })
 }
 
 function deleteUser(req, res) {
-  const id = req.params.id;
-  if (id !== "1") {
-    return res.status(400).json({
-      success: false,
-      message: "Invalid userId"
-    });
-  }
-  return res.json({
-    success: true,
-    message: "User deleted successfully",
-  });
+  const userId = req.params.id;
+  pool.query(usersQueries.deleteUser({userId}), (err, rows, fields) => {
+    if (err) {
+      return res.status(500).json({
+        success: false,
+        message: "DB error"
+      })
+    }
+    return res.json({
+      success: true,
+      message: "User deleted successfully"
+    })
+  })
 }
 
 function getAllListingsByUser(req, res) {

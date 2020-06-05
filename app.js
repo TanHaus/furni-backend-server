@@ -19,12 +19,12 @@ app.use('/listings', listingsRouter);
 app.use('/offers', offersRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use( (req, res, next) => {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use( (err, req, res, next) => {
   res.status(err.status || 500);
   res.render('error', { error: err });
 });
