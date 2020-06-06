@@ -26,7 +26,7 @@ function handleLoginRequest(req, res) {
         message: "Invalid input"
       })
     }
-    return res.json({
+    return res.status(200).json({
       success: true,
       message: "User logged in successfully",
       data: {

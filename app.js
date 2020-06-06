@@ -4,6 +4,7 @@ const morgan = require('morgan');
 
 const port = 4000;
 
+const handleCorsPolicy = require('./code/middlewares').handleCorsPolicy;
 const loginHandler = require('./code/handlers/loginHandler').handleLoginRequest;
 const usersRouter = require('./routes/usersRouter');
 const listingsRouter = require('./routes/listingsRouter');
@@ -13,6 +14,7 @@ app.use(morgan('dev')); // logger
 app.use(express.json()); // parses request as JSON
 app.use(express.urlencoded({ extended: false })); 
 
+app.use('/', handleCorsPolicy);
 app.post('/login', loginHandler);
 app.use('/users', usersRouter);
 app.use('/listings', listingsRouter);
@@ -26,7 +28,8 @@ app.use( (req, res, next) => {
 // error handler
 app.use( (err, req, res, next) => {
   res.status(err.status || 500);
-  res.render('error', { error: err });
+  res.send(err);
+  // res.render('error', { error: err });
 });
 
 app.listen(port, () => console.log(`Furni listening at http://localhost:${port}`))
