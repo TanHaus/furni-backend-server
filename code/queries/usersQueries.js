@@ -9,15 +9,10 @@ function getUser({userId, email}) {
 }
 
 function createUser({email, password, name, profilePicUrl}) {
-  if (!(email && password)) {
+  if (!(email && password && name)) {
     return '';
   }
-  let queryString = `INSERT INTO users (email, password, name, profilePicUrl) VALUES ('${email}', '${password}',`;
-  if (name) {
-    queryString += ` '${name}',`;
-  } else {
-    queryString += " NULL,";
-  }
+  let queryString = `INSERT INTO users (email, password, name, profilePicUrl) VALUES ('${email}', '${password}', '${name}',`;
   if (profilePicUrl) {
     queryString += ` '${profilePicUrl}',`;
   } else {
@@ -28,7 +23,7 @@ function createUser({email, password, name, profilePicUrl}) {
 }
 
 function editUser({userId, email, password, name, profilePicUrl}) {
-  if (!(email || password || name || profilePicUrl)) {
+  if (!userId || !(email || password || name || profilePicUrl)) {
     return '';
   }
   let queryString = "UPDATE users SET";
@@ -49,7 +44,7 @@ function editUser({userId, email, password, name, profilePicUrl}) {
 }
 
 function deleteUser({userId}) {
-  return `DELETE FROM users WHERE userId = ${userId};`;
+  return `DELETE FROM users WHERE userId = '${userId}';`;
 }
 
 module.exports = {

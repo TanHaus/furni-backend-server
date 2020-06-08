@@ -1,79 +1,105 @@
-function createListing(req, res) {
-  const { sellerId, name, timeCreated, timeSold, price, condition, dimensions, description, category, deliveryOption, status } = req.body;
-  if (!(sellerId && name && timeCreated && price && condition && dimensions && deliveryOption)) {
-    return res.status(400).json({
+const pool = require('../database');
+const listingsQueries = require('../queries/listingsQueries');
+
+async function createListing(req, res) {
+  const { sellerId, name, timeCreated, price, itemCondition, description, category, deliveryOption } = req.body;
+  const queryString = listingsQueries.createListing({ sellerId, name, timeCreated, price, itemCondition, description, category, deliveryOption });
+  try {
+    await pool.query(queryString);
+    return res.json({
+      success: true,
+      message: "Listing created"
+    });
+  } catch (err) {
+    return res.status(500).json({
       success: false,
-      message: "Invalid or missing input"
-    })
+      message: "DB error"
+    });
   }
-  return res.json({
-    success: true,
-    message: "Listing created"
-  });
 }
 
-function getListing(req, res) {
-  const id = req.params.id;
-  if (id !== "1") {
-    return res.status(400).json({
+async function getListings(req, res) {
+  try {
+    const rows = await pool.query(listingsQueries.getListings());
+    return res.json({
+      success: true,
+      message: "Listings retrieved successfully",
+      data: rows
+    })
+  } catch (err) {
+    return res.status(500).json({
       success: false,
-      message: "Invalid listingId"
+      message: "DB error"
     })
   }
-  return res.json({
-    success: true,
-    message: "Listing retrieved successfully",
-    data: {
-      listingId: 1,
-      sellerId: 1,
-      name: "Purple sofa",
-      timeCreated: "2020-04-03 14:31:32",
-      timeSold: "",
-      price: 13.32,
-      condition: "new",
-      dimensions: {
-        length: 100,
-        width: 100,
-        height: 100
-      },
-      description: "beautiful",
-      category: "livingRoom",
-      deliveryOption: "meetup",
-      status: "available"
+}
+
+async function getListing(req, res) {
+  const listingId = req.params.id;
+  try {
+    const rows = await pool.query(listingsQueries.getListing({listingId}));
+    if (rows.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid listingId"
+      })
     }
-  })
+    return res.json({
+      success: true,
+      message: "Listing retrieved successfully",
+      data: rows[0]
+    })
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "DB error"
+    })
+  }
 }
 
-function editListing(req, res) {
-  const id = req.params.id;
-  if (id !== 1) {
+async function editListing(req, res) {
+  const listingId = req.params.id;
+  const { name, price, itemCondition, description, category, deliveryOption } = req.body;
+  const queryString = listingsQueries.editListing({listingId, name, price, itemCondition, description, category, deliveryOption});
+  if (!queryString) {
     return res.status(400).json({
       success: false,
-      message: "Invalid listingId"
-    });
+      message: "Missing input"
+    })
   }
-  return res.json({
-    success: true,
-    message: "Listing edited successfully",
-  });
+  try {
+    await pool.query(queryString);
+    return res.json({
+      success: true,
+      message: "Listing edited successfully",
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "DB error"
+    })
+  }
 }
 
-function deleteListing(req, res) {
-  const id = req.params.id;
-  if (id !== 1) {
-    return res.status(400).json({
-      success: false,
-      message: "Invalid listingId"
+async function deleteListing(req, res) {
+  const listingId = req.params.id;
+  try {
+    await pool.query(listingsQueries.deleteListing({listingId}));
+    return res.json({
+      success: true,
+      message: "Listing deleted successfully",
     });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "DB error"
+    })
   }
-  return res.json({
-    success: true,
-    message: "Listing deleted successfully",
-  });
 }
 
 module.exports = {
   createListing,
+  getListings,
   getListing,
   editListing,
   deleteListing

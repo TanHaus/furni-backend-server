@@ -2,24 +2,10 @@ const pool = require('../database');
 const usersQueries = require('../queries/usersQueries');
 const generateHash = require('../utility').generateHash;
 
-function getUsers(req, res) {
-  return res.json({
-    success: true,
-    message: "Users retrieved successfully",
-    data: [
-      {
-        userId: 1,
-        name: "test",
-        email: "test@gmail.com",
-        profilePicUrl: "test"
-      }
-    ]
-  });
-}
-
-function getUser(req, res) {
+async function getUser(req, res) {
   const userId = req.params.id;
-  pool.query(usersQueries.getUser({userId}), (err, rows, fields) => {
+  try {
+    const rows = await pool.query(usersQueries.getUser({userId}));
     if (rows.length === 0) {
       return res.status(404).json({
         success: false,
@@ -31,7 +17,12 @@ function getUser(req, res) {
       message: "User retrieved successfully",
       data: rows[0]
     })
-  })
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "DB error"
+    })
+  }
 }
 
 async function createUser(req, res) {
@@ -42,20 +33,27 @@ async function createUser(req, res) {
     return res.json({
       success: false,
       message: "Missing input"
-    })
+    });
   }
-  pool.query(queryString, (err, rows, fields) => {
-    if (err) {
+  try {
+    const rows = await pool.query(usersQueries.getUser({email}));
+    if (rows.length > 0) {
       return res.status(500).json({
         success: false,
-        message: "DB error"
-      })
+        message: "Email has been used"
+      });
     }
+    await pool.query(queryString);
     return res.json({
       success: true,
       message: "Account created successfully"
     })
-  });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "DB error"
+    });
+  }
 }
 
 async function editUser(req, res) {
@@ -69,34 +67,34 @@ async function editUser(req, res) {
       message: "No edit"
     })
   }
-  pool.query(queryString, (err, rows, fields) => {
-    if (err) {
-      return res.status(500).json({
-        success: false,
-        message: "DB error"
-      })
-    }
+  try {
+    await pool.query(queryString);
     return res.json({
       success: true,
       message: "User edited successfully"
     })
-  })
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "DB error"
+    })
+  }
 }
 
-function deleteUser(req, res) {
+async function deleteUser(req, res) {
   const userId = req.params.id;
-  pool.query(usersQueries.deleteUser({userId}), (err, rows, fields) => {
-    if (err) {
-      return res.status(500).json({
-        success: false,
-        message: "DB error"
-      })
-    }
+  try {
+    await pool.query(usersQueries.deleteUser({userId}));
     return res.json({
       success: true,
       message: "User deleted successfully"
     })
-  })
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "DB error"
+    })
+  }
 }
 
 function getAllListingsByUser(req, res) {
@@ -128,7 +126,6 @@ function getAllListingsByUser(req, res) {
 
 module.exports = {
   createUser,
-  getUsers,
   getUser,
   editUser,
   deleteUser,

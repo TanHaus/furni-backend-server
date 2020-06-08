@@ -2,16 +2,11 @@ const pool = require('../database');
 const usersQueries = require('../queries/usersQueries');
 const checkPassword = require('../utility').checkPassword;
 
-function handleLoginRequest(req, res) {
+async function handleLoginRequest(req, res) {
   const { email, password } = req.body;
   
-  pool.query(usersQueries.getUser({email}), async (err, rows, fields) => {
-    if (err) {
-      return res.status(500).json({
-        success: false,
-        message: "DB error"
-      })
-    }
+  try {
+    const rows = await pool.query(usersQueries.getUser({email}));
     if (rows.length === 0) {
       return res.json({
         success: false,
@@ -30,11 +25,16 @@ function handleLoginRequest(req, res) {
       success: true,
       message: "User logged in successfully",
       data: {
-        user: rows[0],
+        user: user,
         accessToken: "test"
       }
     })
-  })
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "DB error"
+    })
+  }
 }
 
 module.exports = {
