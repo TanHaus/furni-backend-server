@@ -1,8 +1,5 @@
 const mysql = require('mysql');
-<<<<<<< HEAD
 const util = require('util');
-=======
->>>>>>> 830792b... implement environmental variables
 require('dotenv').config();
 
 const pool = mysql.createPool({
