@@ -1,12 +1,12 @@
 function getListings() {
-  return 'SELECT * FROM listings';
+  return 'SELECT listings.*, GROUP_CONCAT(listingPics.picUrl) AS piclUrls FROM listings LEFT JOIN listingPics ON listings.listingId = listingPics.listingId GROUP BY listings.listingId;';
 }
 
 function getListing({listingId}) {
   if (!(listingId)) {
     return '';
   }
-  return `SELECT * FROM listings WHERE listingId = '${listingId}';`;
+  return `SELECT * FROM listings INNER JOIN pictures ON listings.listingId = pictures.listingId WHERE listingId = '${listingId}';`;
 }
 
 function createListing({ sellerId, name, timeCreated, price, itemCondition, description, category, deliveryOption }) {
@@ -68,10 +68,24 @@ function deleteListing({listingId}) {
   return `DELETE FROM listings WHERE listingId = '${listingId}';`;
 }
 
+function insertPics({listingId, picUrls}) {
+  if (!(listingId && picUrls)) {
+    return '';
+  }
+  let queryString = 'INSERT INTO listingPics (listingId, picUrl) VALUES';
+  const urlArray = picUrls.split(',');
+  for (const url of urlArray) {
+    queryString += ` ('${listingId}', '${url}'),`
+  }
+  queryString = queryString.slice(0, -1) + ";";
+  return queryString;
+}
+
 module.exports = {
   getListings,
   getListing,
   createListing, 
   editListing,
-  deleteListing
+  deleteListing,
+  insertPics
 }

@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
-const { createOffer, getOffer, editOffer, deleteOffer } = require('../code/handlers/offersHandler');
+const offersHandler = require('../code/handlers/offersHandler');
 
-router.post('/', createOffer);
-router.get('/:id', getOffer);
-router.put('/:id', editOffer);
-router.delete('/:id', deleteOffer);
+router.post('/', offersHandler.createOffer);
+router.get('/:id', offersHandler.getOffer);
+router.put('/:id', offersHandler.editOffer);
+router.delete('/:id', offersHandler.deleteOffer);
 
 module.exports = router;

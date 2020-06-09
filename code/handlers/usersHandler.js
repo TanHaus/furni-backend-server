@@ -5,23 +5,24 @@ const generateHash = require('../utility').generateHash;
 async function getUser(req, res) {
   const userId = req.params.id;
   try {
-    const rows = await pool.query(usersQueries.getUser({userId}));
-    if (rows.length === 0) {
+    const results = await pool.query(usersQueries.getUser({userId}));
+    if (results.length === 0) {
       return res.status(404).json({
         success: false,
         message: "User not found"
-      })
+      });
     }
     return res.json({
       success: true,
       message: "User retrieved successfully",
-      data: rows[0]
-    })
+      data: results[0]
+    });
   } catch (err) {
+    console.log(err);
     return res.status(500).json({
       success: false,
       message: "DB error"
-    })
+    });
   }
 }
 
@@ -36,8 +37,8 @@ async function createUser(req, res) {
     });
   }
   try {
-    const rows = await pool.query(usersQueries.getUser({email}));
-    if (rows.length > 0) {
+    const results = await pool.query(usersQueries.getUser({email}));
+    if (results.length > 0) {
       return res.status(500).json({
         success: false,
         message: "Email has been used"
@@ -47,8 +48,9 @@ async function createUser(req, res) {
     return res.json({
       success: true,
       message: "Account created successfully"
-    })
+    });
   } catch (err) {
+    console.log(err);
     return res.status(500).json({
       success: false,
       message: "DB error"
@@ -64,20 +66,21 @@ async function editUser(req, res) {
   if (!queryString) {
     return res.json({
       success: false,
-      message: "No edit"
-    })
+      message: "Missing input"
+    });
   }
   try {
     await pool.query(queryString);
     return res.json({
       success: true,
       message: "User edited successfully"
-    })
+    });
   } catch (err) {
+    console.log(err);
     return res.status(500).json({
       success: false,
       message: "DB error"
-    })
+    });
   }
 }
 
@@ -88,40 +91,54 @@ async function deleteUser(req, res) {
     return res.json({
       success: true,
       message: "User deleted successfully"
-    })
+    });
   } catch (err) {
+    console.log(err);
     return res.status(500).json({
       success: false,
       message: "DB error"
-    })
+    });
   }
 }
 
-function getAllListingsByUser(req, res) {
-  return res.json({
-    success: true,
-    message: "Listings retrieved successfully",
-    data: [
-      {
-        listingId: 1,
-        sellerId: 1,
-        name: "Purple sofa",
-        timeCreated: "2020-04-03 14:31:32",
-        timeSold: "",
-        price: 13.32,
-        condition: "new",
-        dimensions: {
-          length: 100,
-          width: 100,
-          height: 100
-        },
-        description: "beautiful",
-        category: "livingRoom",
-        deliveryOption: "meetup",
-        status: "available"
-      }
-    ]
-  });
+async function getUserListings(req, res) {
+  const userId = req.params.id;
+  try {
+    const results = await pool.query(usersQueries.getUserListings({userId}));
+    return res.json({
+      success: true,
+      message: "Listings retrieved successfully",
+      data: results
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      success: false,
+      message: "DB error"
+    });
+  }
+}
+
+async function getUserPreferences(req, res) {
+  const userId = req.params.id;
+  try {
+    const results = await pool.query(usersQueries.getUserPreferences({userId}));
+    return res.json({
+      success: true,
+      message: "Preferences retrieved successfully",
+      data: results
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      success: false,
+      message: "DB error"
+    });
+  }
+}
+
+async function editUserPreferences(req, res) {
+
 }
 
 module.exports = {
@@ -129,5 +146,7 @@ module.exports = {
   getUser,
   editUser,
   deleteUser,
-  getAllListingsByUser
-};
+  getUserListings,
+  getUserPreferences,
+  editUserPreferences
+}

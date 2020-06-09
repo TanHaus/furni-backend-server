@@ -6,14 +6,14 @@ async function handleLoginRequest(req, res) {
   const { email, password } = req.body;
   
   try {
-    const rows = await pool.query(usersQueries.getUser({email}));
-    if (rows.length === 0) {
+    const results = await pool.query(usersQueries.getUser({email}));
+    if (results.length === 0) {
       return res.json({
         success: false,
         message: "Invalid input"
       })
     } 
-    const user = rows[0];
+    const user = results[0];
     const match = await checkPassword(password, user.password);
     if (!match) {
       return res.json({
@@ -30,6 +30,7 @@ async function handleLoginRequest(req, res) {
       }
     })
   } catch (err) {
+    console.log(err);
     return res.status(500).json({
       success: false,
       message: "DB error"

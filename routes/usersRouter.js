@@ -1,12 +1,14 @@
 const express = require('express');
 const router = express.Router();
 
-const { createUser, getUser, editUser, deleteUser, getAllListingsByUser } = require('../code/handlers/usersHandler');
+const usersHandler = require('../code/handlers/usersHandler');
 
-router.post('/', createUser);
-router.get('/:id', getUser);
-router.put('/:id', editUser);
-router.delete('/:id', deleteUser);
-router.get('/listings', getAllListingsByUser);
+router.get('/:id/listings', usersHandler.getUserListings);
+router.get('/:id/preferences', usersHandler.getUserPreferences);
+router.put('/:id/preferences', usersHandler.editUserPreferences);
+router.get('/:id', usersHandler.getUser);
+router.put('/:id', usersHandler.editUser);
+router.delete('/:id', usersHandler.deleteUser);
+router.post('/', usersHandler.createUser);
 
 module.exports = router;

@@ -2,15 +2,23 @@ const pool = require('../database');
 const listingsQueries = require('../queries/listingsQueries');
 
 async function createListing(req, res) {
-  const { sellerId, name, timeCreated, price, itemCondition, description, category, deliveryOption } = req.body;
-  const queryString = listingsQueries.createListing({ sellerId, name, timeCreated, price, itemCondition, description, category, deliveryOption });
+  const { sellerId, name, timeCreated, price, itemCondition, description, category, deliveryOption, picUrls } = req.body;
+  const createLisitngQueryString = listingsQueries.createListing({ sellerId, name, timeCreated, price, itemCondition, description, category, deliveryOption });
+  if (!createLisitngQueryString) {
+    return res.status(400).json({
+      success: false,
+      message: "Misisng input"
+    })
+  }
   try {
-    await pool.query(queryString);
+    const results = await pool.query(createLisitngQueryString);
+    await pool.query(listingsQueries.insertPics({listingId: results.insertId, picUrls}));
     return res.json({
       success: true,
       message: "Listing created"
     });
   } catch (err) {
+    console.log(err);
     return res.status(500).json({
       success: false,
       message: "DB error"
@@ -20,13 +28,14 @@ async function createListing(req, res) {
 
 async function getListings(req, res) {
   try {
-    const rows = await pool.query(listingsQueries.getListings());
+    const results = await pool.query(listingsQueries.getListings());
     return res.json({
       success: true,
       message: "Listings retrieved successfully",
-      data: rows
+      data: results
     })
   } catch (err) {
+    console.log(err);
     return res.status(500).json({
       success: false,
       message: "DB error"
@@ -37,8 +46,8 @@ async function getListings(req, res) {
 async function getListing(req, res) {
   const listingId = req.params.id;
   try {
-    const rows = await pool.query(listingsQueries.getListing({listingId}));
-    if (rows.length === 0) {
+    const results = await pool.query(listingsQueries.getListing({listingId}));
+    if (results.length === 0) {
       return res.status(400).json({
         success: false,
         message: "Invalid listingId"
@@ -47,9 +56,10 @@ async function getListing(req, res) {
     return res.json({
       success: true,
       message: "Listing retrieved successfully",
-      data: rows[0]
+      data: results[0]
     })
   } catch (err) {
+    console.log(err);
     return res.status(500).json({
       success: false,
       message: "DB error"

@@ -17,6 +17,7 @@ async function createOffer(req, res) {
       message: "Offer created"
     });
   } catch (err) {
+    console.log(err);
     return res.status(500).json({
       success: false,
       message: "DB error"
@@ -27,8 +28,8 @@ async function createOffer(req, res) {
 async function getOffer(req, res) {
   const offerId = req.params.id;
   try {
-    const rows = await pool.query(offersQueries.getOffer({offerId}));
-    if (rows.length === 0) {
+    const results = await pool.query(offersQueries.getOffer({offerId}));
+    if (results.length === 0) {
       return res.status(400).json({
         success: false,
         message: "Invalid offerId"
@@ -37,9 +38,10 @@ async function getOffer(req, res) {
     return res.json({
       success: true,
       message: "Offer retrieved successfully",
-      data: rows[0]
+      data: results[0]
     })
   } catch (err) {
+    console.log(err);
     return res.status(500).json({
       success: false,
       message: "DB error"
@@ -64,6 +66,7 @@ async function editOffer(req, res) {
       message: "Offer edited successfully",
     });
   } catch (err) {
+    console.log(err);
     return res.status(500).json({
       success: false,
       message: "DB error"
@@ -80,6 +83,7 @@ async function deleteOffer(req, res) {
       message: "Offer deleted successfully",
     });
   } catch (err) {
+    console.log(err);
     return res.status(500).json({
       success: false,
       message: "DB error"

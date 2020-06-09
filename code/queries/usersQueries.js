@@ -44,12 +44,21 @@ function editUser({userId, email, password, name, profilePicUrl}) {
 }
 
 function deleteUser({userId}) {
-  return `DELETE FROM users WHERE userId = '${userId}';`;
+  return userId ? `DELETE FROM users WHERE userId = '${userId}';` : '';
+}
+
+function getUserListings({userId}) {
+  return userId ? `SELECT * FROM listings WHERE sellerId = '${userId}';` : '';
+}
+function getUserPreferences({userId}) {
+  return `SELECT * FROM userPreferences WHERE userId = '${userId}';`;
 }
 
 module.exports = {
   getUser,
   createUser, 
   editUser,
-  deleteUser
+  deleteUser,
+  getUserListings,
+  getUserPreferences
 }
