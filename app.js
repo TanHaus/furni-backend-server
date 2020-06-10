@@ -5,7 +5,7 @@ const morgan = require('morgan');
 const port = 4000;
 
 const handleCorsPolicy = require('./code/middlewares').handleCorsPolicy;
-const loginHandler = require('./code/handlers/loginHandler').handleLoginRequest;
+const loginHandler = require('./routes/loginRouter');
 const usersRouter = require('./routes/usersRouter');
 const listingsRouter = require('./routes/listingsRouter');
 const offersRouter = require('./routes/offersRouter');
@@ -15,7 +15,7 @@ app.use(express.json()); // parses request as JSON
 app.use(express.urlencoded({ extended: false })); 
 
 app.use('/', handleCorsPolicy);
-app.post('/login', loginHandler);
+app.use('/login', loginHandler);
 app.use('/users', usersRouter);
 app.use('/listings', listingsRouter);
 app.use('/offers', offersRouter);

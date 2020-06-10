@@ -12,10 +12,12 @@ async function getUser(req, res) {
         message: "User not found"
       });
     }
+    const user = results[0];
+    delete user.password;
     return res.json({
       success: true,
       message: "User retrieved successfully",
-      data: results[0]
+      data: user
     });
   } catch (err) {
     console.log(err);
@@ -102,6 +104,7 @@ async function deleteUser(req, res) {
 }
 
 async function getUserListings(req, res) {
+  console.log('test handler');
   const userId = req.params.id;
   try {
     const results = await pool.query(usersQueries.getUserListings({userId}));
