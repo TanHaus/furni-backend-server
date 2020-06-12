@@ -104,7 +104,6 @@ async function deleteUser(req, res) {
 }
 
 async function getUserListings(req, res) {
-  console.log('test handler');
   const userId = req.params.id;
   try {
     const results = await pool.query(usersQueries.getUserListings({userId}));

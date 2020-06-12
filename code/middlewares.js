@@ -13,10 +13,8 @@ function handleCorsPolicy(req, res, next)  {
 }
 
 function authentication(req, res, next) {
-  console.log('test');
   const authorizationHeader = req.headers['authorization'] || '';
   const accessToken = authorizationHeader.startsWith('Bearer ') ? authorizationHeader.slice(7) : '';
-  console.log('start' + accessToken + 'end');
   if (!accessToken) {
     console.log('missing access token');
     return res.status(401).json({
