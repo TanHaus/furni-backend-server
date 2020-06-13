@@ -2,8 +2,8 @@ const pool = require('../database');
 const listingsQueries = require('../queries/listingsQueries');
 
 async function createListing(req, res) {
-  const { sellerId, name, timeCreated, price, itemCondition, description, category, deliveryOption, picUrls } = req.body;
-  const createLisitngQueryString = listingsQueries.createListing({ sellerId, name, timeCreated, price, itemCondition, description, category, deliveryOption });
+  const { sellerId, title, timeCreated, price, itemCondition, description, category, deliveryOption, picUrls } = req.body;
+  const createLisitngQueryString = listingsQueries.createListing({ sellerId, title, timeCreated, price, itemCondition, description, category, deliveryOption });
   if (!createLisitngQueryString) {
     return res.status(400).json({
       success: false,
@@ -12,7 +12,8 @@ async function createListing(req, res) {
   }
   try {
     const results = await pool.query(createLisitngQueryString);
-    await pool.query(listingsQueries.insertPics({listingId: results.insertId, picUrls}));
+    const insertPicUrlsQueryString = listingsQueries.insertPics({listingId: results.insertId, picUrls});
+    if (insertPicUrlsQueryString) await pool.query(insertPicUrlsQueryString);
     return res.json({
       success: true,
       message: "Listing created"

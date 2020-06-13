@@ -60,7 +60,6 @@ async function handleRefreshToken(req, res) {
   try {
     const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET_KEY);
     const refreshTokenJid = decoded.jid;
-    console.log('test1 ' + JSON.stringify(decoded));
     const results = await pool.query(loginQueries.getRefreshToken({refreshTokenJid})); 
     if (results.length === 0) {
       return res.status(401).json({
@@ -68,7 +67,6 @@ async function handleRefreshToken(req, res) {
         message: "Unauthorized attempt to renew tokens"
       })
     }
-    console.log('test2')
     await pool.query(loginQueries.deleteRefreshToken({refreshTokenJid}));
     if (Math.floor(Date.now()/1000) < results[0].accessTokenExp) {
       return res.status(401).json({
@@ -80,7 +78,6 @@ async function handleRefreshToken(req, res) {
     const newAccessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET_KEY, {expiresIn: process.env.ACCESS_TOKEN_LIFE});
     const newAccessTokenExp = jwt.verify(newAccessToken, process.env.ACCESS_TOKEN_SECRET_KEY).exp;
     const newRefreshTokenJid = uuidv4();
-    console.log('test3')
     await pool.query(loginQueries.insertRefreshToken({refreshTokenJid: newRefreshTokenJid, accessTokenExp: newAccessTokenExp}));
     const newRefreshToken = jwt.sign({...payload, ...{jid: newRefreshTokenJid}}, process.env.REFRESH_TOKEN_SECRET_KEY, {expiresIn: process.env.REFRESH_TOKEN_LIFE});
     return res.json({
