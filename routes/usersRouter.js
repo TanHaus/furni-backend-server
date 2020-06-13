@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 
 const usersHandler = require('../code/handlers/usersHandler');
+const authentication = require('../code/middlewares').authentication;
 
+router.use('/:id', authentication);
 router.get('/:id/listings', usersHandler.getUserListings);
 router.get('/:id/preferences', usersHandler.getUserPreferences);
 router.put('/:id/preferences', usersHandler.editUserPreferences);
