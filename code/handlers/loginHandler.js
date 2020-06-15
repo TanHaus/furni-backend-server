@@ -98,7 +98,27 @@ async function handleRefreshToken(req, res) {
   }
 }
 
+async function handleDeleteToken(req, res) {
+  const refreshToken = req.body.refreshToken;
+  try {
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET_KEY);
+    const refreshTokenJid = decoded.jid;
+    await pool.query(loginQueries.deleteRefreshToken({refreshTokenJid}));
+    return res.json({
+      success: true,
+      message: "Token deleted successfully"
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      success: false,
+      message: err.message
+    })
+  }
+}
+
 module.exports = {
   handleLoginRequest,
-  handleRefreshToken
+  handleRefreshToken,
+  handleDeleteToken
 };
