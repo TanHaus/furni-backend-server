@@ -1,9 +1,15 @@
 function getListings(q) {
-  return `SELECT l.*, GROUP_CONCAT(listingPics.picUrl) AS picUrls 
-          FROM (SELECT * FROM listings WHERE title LIKE '%${q}%') l 
-          LEFT JOIN listingPics 
-          ON l.listingId = listingPics.listingId 
-          GROUP BY l.listingId;`;
+  return q 
+    ? `SELECT l.*, GROUP_CONCAT(listingPics.picUrl) AS picUrls 
+      FROM (SELECT * FROM listings WHERE title LIKE '%${q}%') l 
+      LEFT JOIN listingPics 
+      ON l.listingId = listingPics.listingId 
+      GROUP BY l.listingId;`
+    : `SELECT listings.*, GROUP_CONCAT(listingPics.picUrl) AS picUrls
+      FROM listings 
+      LEFT JOIN listingPics
+      ON listings.listingId = listingPics.listingId
+      GROUP BY listings.listingId;`
 }
 
 function getListing({listingId}) {
