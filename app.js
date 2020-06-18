@@ -1,5 +1,8 @@
 const express = require('express');
 const app = express();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
+
 const morgan = require('morgan');
 
 const port = 4000;
@@ -9,6 +12,7 @@ const loginHandler = require('./routes/loginRouter');
 const usersRouter = require('./routes/usersRouter');
 const listingsRouter = require('./routes/listingsRouter');
 const offersRouter = require('./routes/offersRouter');
+// const chatsRouter = require('./routes/chatsRouter');
 
 app.use(morgan('dev')); // logger
 app.use(express.json()); // parses request as JSON
@@ -19,6 +23,31 @@ app.use('/login', loginHandler);
 app.use('/users', usersRouter);
 app.use('/listings', listingsRouter);
 app.use('/offers', offersRouter);
+// app.use('/chats', chatsRouter);
+
+app.get('/', function(req, res) {
+  res.sendfile('index.html');
+});
+
+users = [];
+var nsp = io.of('/chats/1');
+nsp.on('connection', function(socket) {
+  console.log('A user connected');
+  socket.on('setUsername', function(data) {
+     console.log(data);
+     
+     if(users.indexOf(data) > -1) {
+        socket.emit('userExists', data + ' username is taken! Try some other username.');
+     } else {
+        users.push(data);
+        socket.emit('userSet', {username: data});
+     }
+  });
+  
+  socket.on('msg', function(data) {
+     nsp.emit('newmsg', data); //Send message to everyone in the namespace
+  })
+});
 
 // catch 404 and forward to error handler
 app.use( (req, res, next) => {
@@ -32,4 +61,4 @@ app.use( (err, req, res, next) => {
   // res.render('error', { error: err });
 });
 
-app.listen(port, () => console.log(`Furni listening at http://localhost:${port}`))
+http.listen(port, () => console.log(`Furni listening at http://localhost:${port}`))

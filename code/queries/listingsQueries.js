@@ -6,7 +6,7 @@ function getListings(q) {
           GROUP BY l.listingId;`;
 }
 
-function getListing({listingId}) {
+function getListing(listingId) {
   if (!(listingId)) {
     return '';
   }
@@ -68,7 +68,7 @@ function editListing({listingId, name, price, itemCondition, description, catego
   return queryString;
 }
 
-function deleteListing({listingId}) {
+function deleteListing(listingId) {
   return `DELETE FROM listings WHERE listingId = '${listingId}';`;
 }
 
