@@ -62,9 +62,8 @@ async function createUser(req, res) {
 
 async function editUser(req, res) {
   const userId = req.params.id;
-  const { email, password, name, profilePicUrl } = req.body;
-  const hashedPassword = password ? await generateHash(password) : "";
-  const queryString = usersQueries.editUser({ userId, email, password: hashedPassword, name, profilePicUrl });
+  const { email, name, profilePicUrl } = req.body;
+  const queryString = usersQueries.editUser({ userId, email, name, profilePicUrl });
   if (!queryString) {
     return res.json({
       success: false,

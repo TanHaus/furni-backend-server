@@ -9,9 +9,7 @@ function getUser({userId, email}) {
 }
 
 function createUser({email, password, name, profilePicUrl}) {
-  if (!(email && password && name)) {
-    return '';
-  }
+  if (!(email && password && name)) return '';
   let queryString = `INSERT INTO users (email, password, name, profilePicUrl) VALUES ('${email}', '${password}', '${name}',`;
   if (profilePicUrl) {
     queryString += ` '${profilePicUrl}',`;
@@ -22,23 +20,12 @@ function createUser({email, password, name, profilePicUrl}) {
   return queryString;
 }
 
-function editUser({userId, email, password, name, profilePicUrl}) {
-  if (!userId || !(email || password || name || profilePicUrl)) {
-    return '';
-  }
+function editUser({userId, email, name, profilePicUrl}) {
+  if (!userId || !(email || name || profilePicUrl)) return '';
   let queryString = "UPDATE users SET";
-  if (email) {
-    queryString += ` email = '${email}',`;
-  }
-  if (password) {
-    queryString += ` password = '${password}',`;
-  }
-  if (name) {
-    queryString += ` name = '${name}',`;
-  }
-  if (profilePicUrl) {
-    queryString += ` profilePicUrl = '${profilePicUrl}',`;
-  }
+  if (email) queryString += ` email = '${email}',`;
+  if (name) queryString += ` name = '${name}',`;
+  if (profilePicUrl) queryString += ` profilePicUrl = '${profilePicUrl}',`;
   queryString = queryString.slice(0, -1) + ` WHERE userId = '${userId}';`;
   return queryString;
 }
