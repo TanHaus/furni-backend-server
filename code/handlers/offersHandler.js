@@ -28,7 +28,7 @@ async function createOffer(req, res) {
 async function getOffer(req, res) {
   const offerId = req.params.id;
   try {
-    const results = await pool.query(offersQueries.getOffer({offerId}));
+    const results = await pool.query(offersQueries.getOffer(offerId));
     if (results.length === 0) {
       return res.status(400).json({
         success: false,
@@ -77,7 +77,7 @@ async function editOffer(req, res) {
 async function deleteOffer(req, res) {
   const offerId = req.params.id;
   try {
-    await pool.query(offersQueries.deleteOffer({offerId}));
+    await pool.query(offersQueries.deleteOffer(offerId));
     return res.json({
       success: true,
       message: "Offer deleted successfully",

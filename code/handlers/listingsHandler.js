@@ -47,7 +47,7 @@ async function getListings(req, res) {
 async function getListing(req, res) {
   const listingId = req.params.id;
   try {
-    const results = await pool.query(listingsQueries.getListing({listingId}));
+    const results = await pool.query(listingsQueries.getListing(listingId));
     if (results.length === 0) {
       return res.status(400).json({
         success: false,
@@ -95,7 +95,7 @@ async function editListing(req, res) {
 async function deleteListing(req, res) {
   const listingId = req.params.id;
   try {
-    await pool.query(listingsQueries.deleteListing({listingId}));
+    await pool.query(listingsQueries.deleteListing(listingId));
     return res.json({
       success: true,
       message: "Listing deleted successfully",

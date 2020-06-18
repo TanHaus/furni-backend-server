@@ -1,4 +1,4 @@
-function getOffer({offerId}) {
+function getOffer(offerId) {
   if (!(offerId)) {
     return '';
   }
@@ -28,7 +28,7 @@ function editOffer({ offerId, priceBidded, status }) {
   return queryString;
 }
 
-function deleteOffer({ offerId }) {
+function deleteOffer(offerId) {
   return `DELETE FROM offers WHERE offerId = '${offerId}';`;
 }
 

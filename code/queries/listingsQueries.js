@@ -2,7 +2,7 @@ function getListings() {
   return 'SELECT listings.*, GROUP_CONCAT(listingPics.picUrl) AS picUrls FROM listings LEFT JOIN listingPics ON listings.listingId = listingPics.listingId GROUP BY listings.listingId;';
 }
 
-function getListing({listingId}) {
+function getListing(listingId) {
   if (!(listingId)) {
     return '';
   }
@@ -64,7 +64,7 @@ function editListing({listingId, name, price, itemCondition, description, catego
   return queryString;
 }
 
-function deleteListing({listingId}) {
+function deleteListing(listingId) {
   return `DELETE FROM listings WHERE listingId = '${listingId}';`;
 }
 
