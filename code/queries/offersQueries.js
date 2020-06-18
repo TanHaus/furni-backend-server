@@ -9,7 +9,8 @@ function createOffer({ buyerId, listingId, priceBidded, timeCreated }) {
   if (!(buyerId && listingId && priceBidded && timeCreated)) {
     return '';
   }
-  let queryString = `INSERT INTO offers (buyerId, listingId, priceBidded, timeCreated, status) VALUES ('${buyerId}', '${listingId}', '${priceBidded}', '${timeCreated}', 'pending');`;
+  let queryString = `INSERT INTO offers (buyerId, listingId, priceBidded, timeCreated, status) 
+    VALUES ('${buyerId}', '${listingId}', '${priceBidded}', '${timeCreated}', 'pending');`;
   return queryString;
 }
 

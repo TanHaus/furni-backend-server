@@ -6,7 +6,7 @@ const authentication = require('../code/middlewares').authentication;
 
 // router.use('/', authentication);
 router.post('/', chatsHandler.createChatSession);
-router.get('/:id', chatsHandler.getChatSession);
+router.use('/:id', chatsHandler.getChatSession);
 // router.get('/', listingsHandler.getListings);
 // router.put('/:id', listingsHandler.editListing);
 // router.delete('/:id', listingsHandler.deleteListing);

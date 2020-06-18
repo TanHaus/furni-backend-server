@@ -33,7 +33,7 @@ async function createUser(req, res) {
   const hashedPassword = password ? await generateHash(password) : "";
   const queryString = usersQueries.createUser({ email, password: hashedPassword, name, profilePicUrl });
   if (!queryString) {
-    return res.json({
+    return res.status(401).json({
       success: false,
       message: "Missing input"
     });

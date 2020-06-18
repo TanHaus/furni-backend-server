@@ -1,23 +1,28 @@
 function getListings(q) {
-  return `SELECT l.*, GROUP_CONCAT(listingPics.picUrl) AS picUrls 
-          FROM (SELECT * FROM listings WHERE title LIKE '%${q}%') l 
-          LEFT JOIN listingPics 
-          ON l.listingId = listingPics.listingId 
-          GROUP BY l.listingId;`;
+  return `SELECT l.*, GROUP_CONCAT(p.picUrl) AS picUrls 
+    FROM (SELECT * FROM listings WHERE title LIKE '%${q}%') l 
+    LEFT JOIN listingPics p
+    ON l.listingId = p.listingId 
+    GROUP BY l.listingId;`;
 }
 
 function getListing(listingId) {
   if (!(listingId)) {
     return '';
   }
-  return `SELECT listings.*, GROUP_CONCAT(listingPics.picUrl) AS picUrls FROM (SELECT * FROM listings WHERE listings.listingId = '${listingId}') listings LEFT JOIN listingPics ON listings.listingId = listingPics.listingId GROUP BY listings.listingId;`;
+  return `SELECT l.*, GROUP_CONCAT(p.picUrl) AS picUrls 
+    FROM (SELECT * FROM listings WHERE listings.listingId = '${listingId}') l 
+    LEFT JOIN listingPics p 
+    ON l.listingId = p.listingId 
+    GROUP BY l.listingId;`;
 }
 
 function createListing({ sellerId, title, timeCreated, price, itemCondition, description, category, deliveryOption }) {
   if (!(sellerId && title && timeCreated && price && itemCondition)) {
     return '';
   }
-  let queryString = `INSERT INTO listings (sellerId, title, timeCreated, price, itemCondition, description, category, deliveryOption, status) VALUES ('${sellerId}', '${title}', '${timeCreated}', '${price}', '${itemCondition}',`;
+  let queryString = `INSERT INTO listings (sellerId, title, timeCreated, price, itemCondition, description, category, deliveryOption, status) 
+    VALUES ('${sellerId}', '${title}', '${timeCreated}', '${price}', '${itemCondition}',`;
   if (description) {
     queryString += ` '${description}',`;
   } else {
