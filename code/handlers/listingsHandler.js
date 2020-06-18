@@ -28,10 +28,12 @@ async function createListing(req, res) {
 }
 
 async function getListings(req, res) {
+  const q = req.query.q;
   try {
-    const results = await pool.query(listingsQueries.getListings());
+    const results = await pool.query(listingsQueries.getListings(q));
     return res.json({
       success: true,
+      q,
       message: "Listings retrieved successfully",
       data: results
     })
