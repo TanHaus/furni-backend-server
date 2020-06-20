@@ -3,7 +3,7 @@ const usersQueries = require('../queries/usersQueries');
 const generateHash = require('../utility').generateHash;
 
 async function getUser(req, res) {
-  const userId = req.params.id;
+  const userId = req.params.userId;
   try {
     const results = await pool.query(usersQueries.getUser({userId}));
     if (results.length === 0) {
@@ -61,7 +61,7 @@ async function createUser(req, res) {
 }
 
 async function editUser(req, res) {
-  const userId = req.params.id;
+  const userId = req.params.userId;
   const { email, name, profilePicUrl } = req.body;
   const queryString = usersQueries.editUser({ userId, email, name, profilePicUrl });
   if (!queryString) {
@@ -86,7 +86,7 @@ async function editUser(req, res) {
 }
 
 async function deleteUser(req, res) {
-  const userId = req.params.id;
+  const userId = req.params.userId;
   try {
     await pool.query(usersQueries.deleteUser({userId}));
     return res.json({
@@ -103,7 +103,7 @@ async function deleteUser(req, res) {
 }
 
 async function getUserListings(req, res) {
-  const userId = req.params.id;
+  const userId = req.params.userId;
   try {
     const results = await pool.query(usersQueries.getUserListings({userId}));
     return res.json({
@@ -121,7 +121,7 @@ async function getUserListings(req, res) {
 }
 
 async function getUserPreferences(req, res) {
-  const userId = req.params.id;
+  const userId = req.params.userId;
   try {
     const results = await pool.query(usersQueries.getUserPreferences({userId}));
     return res.json({

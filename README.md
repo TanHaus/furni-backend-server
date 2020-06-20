@@ -92,7 +92,7 @@ Response: {
   }
 }
 ```
-### 2. /users/:id (GET)
+### 2. /users/:userId (GET)
 ```javascript
 Header: {
   "Content-Type": "application/json",
@@ -116,7 +116,7 @@ Response: {
   }
 }
 ```
-### 3. /users/:id (PUT)
+### 3. /users/:userId (PUT)
 ```javascript
 Header: {
   "Content-Type": "application/json",
@@ -138,7 +138,7 @@ Response: {
   }
 }
 ```
-### 4. /users/:id (DELETE)
+### 4. /users/:userId (DELETE)
 ```javascript
 Header: {
   "Content-Type": "application/json",
@@ -156,7 +156,7 @@ Response: {
   }
 }
 ```
-### 5. /users/:id/listings (GET)
+### 5. /users/:userId/listings (GET)
 ```javascript
 Header: {
   "Content-Type": "application/json",
@@ -223,7 +223,7 @@ Response: {
   }
 }
 ```
-### 3. /listings/:id (GET)
+### 3. /listings/:listingId (GET)
 ```javascript
 Header: {
   "Content-Type": "application/json",
@@ -254,7 +254,7 @@ Response: {
   }
 }
 ```
-### 4. /listings/:id (PUT)
+### 4. /listings/:listingId (PUT)
 ```javascript
 Header: {
   "Content-Type": "application/json",
@@ -283,7 +283,7 @@ Response: {
   }
 }
 ```
-### 5. /listings/:id (DELETE)
+### 5. /listings/:listingId (DELETE)
 ```javascript
 Header: {
   "Content-Type": "application/json",
@@ -301,8 +301,8 @@ Response: {
   }
 }
 ```
-## Listings
-### 1. /offers (POST)
+## Offers
+### 1. /listings/:listingId/offers (POST)
 ```javascript
 Header: {
   "Content-Type": "application/json",
@@ -317,7 +317,7 @@ Payload: {
 Response: {
   Success: {
     "success": true,
-    "message": String,
+    "message": String
   },
   Failure: {
     "success": false,
@@ -325,7 +325,7 @@ Response: {
   }
 }
 ```
-### 3. /offers/:id (GET)
+### 2. /offers/:id (GET)
 ```javascript
 Header: {
   "Content-Type": "application/json",
@@ -344,6 +344,25 @@ Response: {
       "status": String, ('pending', 'accepted', 'rejected')
       "timeCreated": Datetime
     }
+  },
+  Failure: {
+    "success": false,
+    "message": String
+  }
+}
+```
+### 3. /listings/:listingId/offers (GET)
+```javascript
+Header: {
+  "Content-Type": "application/json",
+  "Authorization": "Bearer ..."
+},
+Payload: {},
+Response: {
+  Success: {
+    "success": true,
+    "message": String,
+    "data": Array
   },
   Failure: {
     "success": false,

@@ -46,7 +46,7 @@ async function getListings(req, res) {
 }
 
 async function getListing(req, res) {
-  const listingId = req.params.id;
+  const listingId = req.params.listingId;
   try {
     const results = await pool.query(listingsQueries.getListing(listingId));
     if (results.length === 0) {
@@ -70,7 +70,7 @@ async function getListing(req, res) {
 }
 
 async function editListing(req, res) {
-  const listingId = req.params.id;
+  const listingId = req.params.listingId;
   const { name, price, itemCondition, description, category, deliveryOption } = req.body;
   const queryString = listingsQueries.editListing({listingId, name, price, itemCondition, description, category, deliveryOption});
   if (!queryString) {
@@ -94,7 +94,7 @@ async function editListing(req, res) {
 }
 
 async function deleteListing(req, res) {
-  const listingId = req.params.id;
+  const listingId = req.params.listingId;
   try {
     await pool.query(listingsQueries.deleteListing(listingId));
     return res.json({
