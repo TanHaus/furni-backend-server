@@ -101,12 +101,7 @@ async function editListing(req, res) {
   const { title, price, itemCondition, description, category, deliveryOption, picUrls, pics, timeUpdated } = req.body;
   const s3 = new AWS.S3(s3Config);
   try {
-    if (picUrls) {
-      await pool.query(listingsQueries.deletePics(listingId));
-      await pool.query(listingsQueries.insertPics({listingId, picUrls}));
-    }
     if (pics) {
-      const newPicUrls = [];
       await Promise.all(
         pics.map(async (pic) => {
           const buf = Buffer.from(
@@ -115,7 +110,7 @@ async function editListing(req, res) {
           );
           const params = {
             Bucket: "furni-s3-bucket",
-            Key: `listingPics/${Date.now()}`,
+            Key: `listingPics/${listingId}_${Date.now()}`,
             Body: buf,
             ACL: "public-read",
             ContentEncoding: "base64",
@@ -123,14 +118,17 @@ async function editListing(req, res) {
             ContentDisposition: "attachment",
           };
           const data = await s3.upload(params).promise();
-          newPicUrls.push(data.Location);
+          picUrls.push(data.Location);
         })
       );
-      await pool.query(listingsQueries.insertPics({listingId, picUrls: newPicUrls}));
+    }
+    if (picUrls) {
+      await pool.query(listingsQueries.deletePics(listingId));
+      await pool.query(listingsQueries.insertPics({listingId, picUrls}));
     }
     const queryString = listingsQueries.editListing({listingId, title, price, itemCondition, description, category, deliveryOption, timeUpdated, status});
     if (queryString) await pool.query(queryString);
-    if (picUrls || pics || queryString) return res.json({
+    if (picUrls || queryString) return res.json({
       success: true,
       message: "Listing edited successfully",
     });
@@ -138,7 +136,6 @@ async function editListing(req, res) {
       success: false,
       message: "Missing input"
     })
-
   } catch (err) {
     return res.status(500).json({
       success: false,
