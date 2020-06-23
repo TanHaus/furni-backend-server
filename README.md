@@ -191,7 +191,7 @@ Payload: {
   "description": String,
   "category": String,
   "deliveryOption": String,
-  "picUrls": String
+  "pics": String
 },
 Response: {
   Success: {
@@ -263,14 +263,15 @@ Header: {
 Payload: {
   "sellerId": Integer,
   "title": String,
-  "timeCreated": Datetime,
+  "timeUpdated": Datetime,
   "price": Decimal,
   "itemCondition": String,
   "description": String,
   "category": String,
   "deliveryOption": String,
-  "status": String, ('open', 'closed')
-  "picUrls": String
+  "status": String, ('open', 'closed'),
+  "picUrls": String,
+  "pics": String
 },
 Response: {
   Success: {
