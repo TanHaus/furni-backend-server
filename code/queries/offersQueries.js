@@ -1,5 +1,5 @@
-function getOfferById(offerId) {
-  return offerId ? `SELECT * FROM offers WHERE offerId = '${offerId}';` : '';
+function getOffer(offerId) {
+  return offerId && `SELECT * FROM offers WHERE offerId = '${offerId}';`;
 }
 
 function getOffersByListing({ listingId, buyerId }) {
@@ -23,7 +23,7 @@ function editOffer({ offerId, priceBidded, status, timeUpdated }) {
   if (priceBidded) queryString += ` priceBidded = '${priceBidded}',`;
   if (status) queryString += ` status = '${status}',`;
   if (timeUpdated) queryString += ` timeUpdated = '${timeUpdated}',`;
-  queryString = queryString.slice(0, -1) + ");";
+  queryString = queryString.slice(0, -1) + ";";
   return queryString;
 }
 
@@ -32,7 +32,7 @@ function deleteOffer(offerId) {
 }
 
 module.exports = {
-  getOfferById,
+  getOffer,
   getOffersByListing,
   createOffer, 
   editOffer,

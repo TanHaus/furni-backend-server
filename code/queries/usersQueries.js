@@ -1,21 +1,14 @@
 function getUser({userId, email}) {
-  if (userId) {
-    return `SELECT * FROM users WHERE userId = '${userId}';`;
-  }
-  if (email) {
-    return `SELECT * FROM users WHERE email = '${email}';`;
-  }
+  if (userId) return `SELECT * FROM users WHERE userId = '${userId}';`;
+  if (email) return `SELECT * FROM users WHERE email = '${email}';`;
   return '';
 }
 
 function createUser({email, password, name, profilePicUrl}) {
   if (!(email && password && name)) return '';
   let queryString = `INSERT INTO users (email, password, name, profilePicUrl) VALUES ('${email}', '${password}', '${name}',`;
-  if (profilePicUrl) {
-    queryString += ` '${profilePicUrl}',`;
-  } else {
-    queryString += " NULL,";
-  }
+  if (profilePicUrl) queryString += ` '${profilePicUrl}',`;
+  else queryString += " NULL,";
   queryString = queryString.slice(0, -1) + ");";
   return queryString;
 }
@@ -30,14 +23,19 @@ function editUser({userId, email, name, profilePicUrl}) {
   return queryString;
 }
 
-function deleteUser({userId}) {
-  return userId ? `DELETE FROM users WHERE userId = '${userId}';` : '';
+function deleteUser(userId) {
+  return userId && `DELETE FROM users WHERE userId = '${userId}';`;
 }
 
-function getUserListings({userId}) {
-  return userId ? `SELECT * FROM listings WHERE sellerId = '${userId}';` : '';
+function getUserListings(userId) {
+  return userId && `SELECT * FROM listings WHERE sellerId = '${userId}';`;
 }
-function getUserPreferences({userId}) {
+
+function getBuyerOffers(buyerId) {
+  return buyerId && `SELECT * FROM offers WHERE buyerId = '${buyerId}';`;
+}
+
+function getUserPreferences(userId) {
   return `SELECT * FROM userPreferences WHERE userId = '${userId}';`;
 }
 
@@ -47,5 +45,6 @@ module.exports = {
   editUser,
   deleteUser,
   getUserListings,
+  getBuyerOffers,
   getUserPreferences
 }

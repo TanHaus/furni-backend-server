@@ -378,8 +378,8 @@ Header: {
 },
 Payload: {
   "priceBidded": Decimal,
-  "status": String, ('pending', 'accepted', 'rejected')
-  "timeUpdated": Datetime
+  "status": String ('pending', 'accepted', 'rejected'),
+  "timeUpdated": !Datetime
 },
 Response: {
   Success: {
