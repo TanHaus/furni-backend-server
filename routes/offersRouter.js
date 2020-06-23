@@ -6,8 +6,8 @@ const authentication = require('../code/middlewares').authentication;
 
 router.use('/', authentication);
 router.post('/', offersHandler.createOffer);
-router.get('/:id', offersHandler.getOfferById);
-router.put('/:id', offersHandler.editOffer);
-router.delete('/:id', offersHandler.deleteOffer);
+router.get('/:offerId', offersHandler.getOffer);
+router.put('/:offerId', offersHandler.editOffer);
+router.delete('/:offerId', offersHandler.deleteOffer);
 
 module.exports = router;

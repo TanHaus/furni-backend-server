@@ -5,13 +5,12 @@ const generateHash = require('../utility').generateHash;
 async function getUser(req, res) {
   const userId = req.params.userId;
   try {
-    const results = await pool.query(usersQueries.getUser({userId}));
-    if (results.length === 0) {
+    const results = await pool.query(usersQueries.getUser(userId));
+    if (results.length === 0) 
       return res.status(404).json({
         success: false,
         message: "User not found"
       });
-    }
     const user = results[0];
     delete user.password;
     return res.json({
@@ -30,22 +29,20 @@ async function getUser(req, res) {
 
 async function createUser(req, res) {
   const { email, password, name, profilePicUrl } = req.body;
-  const hashedPassword = password ? await generateHash(password) : "";
+  const hashedPassword = password && await generateHash(password);
   const queryString = usersQueries.createUser({ email, password: hashedPassword, name, profilePicUrl });
-  if (!queryString) {
+  if (!queryString) 
     return res.json({
       success: false,
       message: "Missing input"
     });
-  }
   try {
     const results = await pool.query(usersQueries.getUser({email}));
-    if (results.length > 0) {
+    if (results.length > 0) 
       return res.status(500).json({
         success: false,
         message: "Email has been used"
       });
-    }
     await pool.query(queryString);
     return res.json({
       success: true,
@@ -64,12 +61,11 @@ async function editUser(req, res) {
   const userId = req.params.userId;
   const { email, name, profilePicUrl } = req.body;
   const queryString = usersQueries.editUser({ userId, email, name, profilePicUrl });
-  if (!queryString) {
+  if (!queryString) 
     return res.json({
       success: false,
       message: "Missing input"
     });
-  }
   try {
     await pool.query(queryString);
     return res.json({
@@ -88,7 +84,7 @@ async function editUser(req, res) {
 async function deleteUser(req, res) {
   const userId = req.params.userId;
   try {
-    await pool.query(usersQueries.deleteUser({userId}));
+    await pool.query(usersQueries.deleteUser(userId));
     return res.json({
       success: true,
       message: "User deleted successfully"
@@ -105,7 +101,7 @@ async function deleteUser(req, res) {
 async function getUserListings(req, res) {
   const userId = req.params.userId;
   try {
-    const results = await pool.query(usersQueries.getUserListings({userId}));
+    const results = await pool.query(usersQueries.getUserListings(userId));
     return res.json({
       success: true,
       message: "Listings retrieved successfully",
@@ -120,10 +116,28 @@ async function getUserListings(req, res) {
   }
 }
 
+async function getBuyerOffers(req, res) {
+  const buyerId = req.params.userId;
+  try {
+    const results = await pool.query(usersQueries.getBuyerOffers(buyerId));
+    return res.json({
+      success: true,
+      message: "Offers retrieved successfully",
+      data: results
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      success: false,
+      message: "DB error"
+    })
+  }
+}
+
 async function getUserPreferences(req, res) {
   const userId = req.params.userId;
   try {
-    const results = await pool.query(usersQueries.getUserPreferences({userId}));
+    const results = await pool.query(usersQueries.getUserPreferences(userId));
     return res.json({
       success: true,
       message: "Preferences retrieved successfully",
@@ -148,6 +162,7 @@ module.exports = {
   editUser,
   deleteUser,
   getUserListings,
+  getBuyerOffers,
   getUserPreferences,
   editUserPreferences
 }

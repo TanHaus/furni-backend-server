@@ -58,7 +58,7 @@ async function getOffersByListing(req, res) {
   }
 }
 
-async function getOfferById(req, res) {
+async function getOffer(req, res) {
   const offerId = req.params.offerId;
   try {
     const results = await pool.query(offersQueries.getOffer(offerId));
@@ -83,13 +83,13 @@ async function getOfferById(req, res) {
 }
 
 async function editOffer(req, res) {
-  const offerId = req.params.id;
-  const { priceBidded } = req.body;
-  const queryString = offersQueries.editOffer({ offerId, priceBidded });
+  const offerId = req.params.offerId;
+  const { priceBidded, status, timeUpdated } = req.body;
+  const queryString = offersQueries.editOffer({ offerId, priceBidded, status, timeUpdated });
   if (!queryString) {
     return res.status(400).json({
       success: false,
-      message: "Invalid offerId"
+      message: "Invalid input"
     });
   }
   try {
@@ -108,7 +108,7 @@ async function editOffer(req, res) {
 }
 
 async function deleteOffer(req, res) {
-  const offerId = req.params.id;
+  const offerId = req.params.offerId;
   try {
     await pool.query(offersQueries.deleteOffer(offerId));
     return res.json({
@@ -126,7 +126,7 @@ async function deleteOffer(req, res) {
 
 module.exports = {
   createOffer,
-  getOfferById,
+  getOffer,
   getOffersByListing,
   editOffer,
   deleteOffer

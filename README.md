@@ -377,11 +377,9 @@ Header: {
   "Authorization": "Bearer ..."
 },
 Payload: {
-  "listingId": Integer,
-  "buyerId": Integer,
   "priceBidded": Decimal,
-  "status": String, ('pending', 'accepted', 'rejected')
-  "timeCreated": Datetime
+  "status": String ('pending', 'accepted', 'rejected'),
+  "timeUpdated": !Datetime
 },
 Response: {
   Success: {
