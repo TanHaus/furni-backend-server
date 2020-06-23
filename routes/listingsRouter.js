@@ -9,6 +9,7 @@ router.use('/', authentication);
 router.post('/', listingsHandler.createListing);
 router.post('/:listingId/offers', offersHandler.createOffer);
 router.get('/:listingId/offers', offersHandler.getOffersByListing);
+router.post('/:listingId/pics', listingsHandler.addListingPic);
 router.get('/:listingId', listingsHandler.getListing);
 router.get('/', listingsHandler.getListings);
 router.put('/:listingId', listingsHandler.editListing);

@@ -1,5 +1,6 @@
 const pool = require('../database');
 const listingsQueries = require('../queries/listingsQueries');
+const AWS = require('aws-sdk');
 
 const s3Config = {
   region: process.env.S3_REGION,
@@ -8,7 +9,7 @@ const s3Config = {
 };
 
 async function createListing(req, res) {
-  const { sellerId, title, timeCreated, price, itemCondition, description, category, deliveryOption, pics } = req.body;
+  const { sellerId, title, timeCreated, price, itemCondition, description, category, deliveryOption } = req.body;
   const createLisitngQueryString = listingsQueries.createListing({ sellerId, title, timeCreated, price, itemCondition, description, category, deliveryOption });
   if (!createLisitngQueryString) {
     return res.status(400).json({
@@ -16,34 +17,14 @@ async function createListing(req, res) {
       message: "Misisng input"
     })
   }
-  const s3 = new AWS.S3(s3Config);
-  const picUrls = [];
   try {
-    await Promise.all(
-      pics.map(async (pic) => {
-        const buf = Buffer.from(
-          pic.replace(/^data:image\/\w+;base64,/, ""),
-          "base64"
-        );
-        const params = {
-          Bucket: "furni-s3-bucket",
-          Key: `listingPics/${Date.now()}`,
-          Body: buf,
-          ACL: "public-read",
-          ContentEncoding: "base64",
-          ContentType: "image/jpeg",
-          ContentDisposition: "attachment",
-        };
-        const data = await s3.upload(params).promise();
-        picUrls.push(data.Location);
-      })
-    );
     const results = await pool.query(createLisitngQueryString);
-    const insertPicUrlsQueryString = listingsQueries.insertPics({listingId: results.insertId, picUrls});
-    if (insertPicUrlsQueryString) await pool.query(insertPicUrlsQueryString);
     return res.json({
       success: true,
-      message: "Listing created"
+      message: "Listing created",
+      data: {
+        listingId: results.insertId
+      }
     });
   } catch (err) {
     console.log(err);
@@ -51,6 +32,35 @@ async function createListing(req, res) {
       success: false,
       message: "DB error"
     });
+  }
+}
+
+async function addListingPic(req, res) {
+  const listingId = req.params.listingId;
+  const blob = req.body;
+  const file = new File([blob], `${listingId}_${Date.now()}.jpeg`);
+  const s3 = new AWS.S3(s3Config);
+  const params = {
+    Bucket: "furni-s3-bucket",
+    Key: `listingPics/${file.name}`,
+    Body: file,
+    ACL: "public-read",
+    ContentType: "image/jpeg",
+    ContentDisposition: "attachment",
+  };
+  try {
+    const data = await s3.upload(params).promise();
+    await pool.query(listingsQueries.insertPic({ listingId, picUrls: [data.Location] }));
+    return res.json({
+      success: true,
+      message: "Picutres uploaded successfully"
+    })
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      success: false,
+      message: "DB error"
+    })
   }
 }
 
@@ -98,40 +108,19 @@ async function getListing(req, res) {
 
 async function editListing(req, res) {
   const listingId = req.params.listingId;
-  const { title, price, itemCondition, description, category, deliveryOption, picUrls, pics, timeUpdated } = req.body;
-  const s3 = new AWS.S3(s3Config);
+  const { title, price, itemCondition, description, category, deliveryOption, picUrls, timeUpdated } = req.body;
   try {
-    if (pics) {
-      await Promise.all(
-        pics.map(async (pic) => {
-          const buf = Buffer.from(
-            pic.replace(/^data:image\/\w+;base64,/, ""),
-            "base64"
-          );
-          const params = {
-            Bucket: "furni-s3-bucket",
-            Key: `listingPics/${listingId}_${Date.now()}`,
-            Body: buf,
-            ACL: "public-read",
-            ContentEncoding: "base64",
-            ContentType: "image/jpeg",
-            ContentDisposition: "attachment",
-          };
-          const data = await s3.upload(params).promise();
-          picUrls.push(data.Location);
-        })
-      );
-    }
     if (picUrls) {
       await pool.query(listingsQueries.deletePics(listingId));
       await pool.query(listingsQueries.insertPics({listingId, picUrls}));
     }
     const queryString = listingsQueries.editListing({listingId, title, price, itemCondition, description, category, deliveryOption, timeUpdated, status});
     if (queryString) await pool.query(queryString);
-    if (picUrls || queryString) return res.json({
-      success: true,
-      message: "Listing edited successfully",
-    });
+    if (picUrls || queryString) 
+      return res.json({
+        success: true,
+        message: "Listing edited successfully",
+      });
     return res.status(400).json({
       success: false,
       message: "Missing input"
@@ -162,6 +151,7 @@ async function deleteListing(req, res) {
 
 module.exports = {
   createListing,
+  addListingPic,
   getListings,
   getListing,
   editListing,

@@ -263,7 +263,7 @@ Header: {
 Payload: {
   "sellerId": Integer,
   "title": String,
-  "timeUpdated": Datetime,
+  "timeUpdated": !Datetime,
   "price": Decimal,
   "itemCondition": String,
   "description": String,

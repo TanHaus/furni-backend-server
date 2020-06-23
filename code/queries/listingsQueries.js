@@ -51,10 +51,9 @@ function deleteListing(listingId) {
 }
 
 function insertPics({listingId, picUrls}) {
-  if (!(listingId && picUrls)) return '';
+  if (!(listingId && picUrls.length)) return '';
   let queryString = 'INSERT INTO listingPics (listingId, picUrl) VALUES';
-  const urlArray = picUrls.split(',');
-  for (const url of urlArray) queryString += ` ('${listingId}', '${url}'),`
+  for (const url of picUrls) queryString += ` ('${listingId}', '${url}'),`
   queryString = queryString.slice(0, -1) + ";";
   return queryString;
 }
