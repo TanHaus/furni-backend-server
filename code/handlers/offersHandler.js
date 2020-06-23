@@ -84,8 +84,8 @@ async function getOfferById(req, res) {
 
 async function editOffer(req, res) {
   const offerId = req.params.id;
-  const { priceBidded } = req.body;
-  const queryString = offersQueries.editOffer({ offerId, priceBidded });
+  const { priceBidded, status, timeUpdated } = req.body;
+  const queryString = offersQueries.editOffer({ offerId, priceBidded, status, timeUpdated });
   if (!queryString) {
     return res.status(400).json({
       success: false,
