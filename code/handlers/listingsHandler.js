@@ -124,21 +124,25 @@ async function deleteListing(req, res) {
 }
 
 async function createS3SignedUrl(req, res) {
+  const filename = uuidv4()
   const params = {
     Bucket: process.env.S3_BUCKET_NAME,
-    Key: uuidv4(),
+    Key: filename,
     ACL: "public-read",
     ContentEncoding: "base64",
     ContentType: "image/jpeg",
     ContentDisposition: "attachment",
-    Expires: 60 * 60 // seconds
+    Expires: 60 // seconds
   };
   try {
-    const url = await s3.getSignedUrlPromise('putObject', params);
+    const signedUrl = await s3.getSignedUrlPromise('putObject', params);
     return res.json({
       success: true,
       message: "Presigned URL for S3 upload generated successfully",
-      data: url
+      data: {
+        signedUrl,
+        fileLocation: `https://furni-s3-bucket.s3-ap-southeast-1.amazonaws.com/${filename}`
+      }
     })
   } catch (err) {
     console.log(err);

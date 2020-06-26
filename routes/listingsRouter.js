@@ -1,8 +1,6 @@
 const express = require('express');
 const router = express.Router();
 
-const upload = multer({ storage: Storage })
-
 const listingsHandler = require('../code/handlers/listingsHandler');
 const offersHandler = require('../code/handlers/offersHandler');
 const authentication = require('../code/middlewares').authentication;
