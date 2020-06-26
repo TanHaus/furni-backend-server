@@ -3,7 +3,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 function handleCorsPolicy(req, res, next)  {
-  console.log('passing');
+  console.log('going thru cors');
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
@@ -17,7 +17,6 @@ function authentication(req, res, next) {
   const authorizationHeader = req.headers['authorization'] || '';
   const accessToken = authorizationHeader.startsWith('Bearer ') ? authorizationHeader.slice(7) : '';
   if (!accessToken) {
-    console.log('missing access token');
     return res.status(401).json({
       success: false,
       message: "Missing access token"

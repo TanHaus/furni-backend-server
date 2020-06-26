@@ -1,6 +1,9 @@
 const pool = require('../database');
 const listingsQueries = require('../queries/listingsQueries');
 const AWS = require('aws-sdk');
+const fs = require('fs');
+const util = require('util');
+const writeFile = util.promisify(fs.writeFile);
 
 const s3Config = {
   region: process.env.S3_REGION,
@@ -36,32 +39,49 @@ async function createListing(req, res) {
 }
 
 async function addListingPic(req, res) {
-  const listingId = req.params.listingId;
-  const blob = req.body;
-  const file = new File([blob], `${listingId}_${Date.now()}.jpeg`);
-  const s3 = new AWS.S3(s3Config);
-  const params = {
-    Bucket: "furni-s3-bucket",
-    Key: `listingPics/${file.name}`,
-    Body: file,
-    ACL: "public-read",
-    ContentType: "image/jpeg",
-    ContentDisposition: "attachment",
-  };
-  try {
-    const data = await s3.upload(params).promise();
-    await pool.query(listingsQueries.insertPic({ listingId, picUrls: [data.Location] }));
-    return res.json({
-      success: true,
-      message: "Picutres uploaded successfully"
-    })
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({
-      success: false,
-      message: "DB error"
-    })
-  }
+  console.log('file', req.files);
+  console.log('body', req.body);
+  res.status(200).json({
+    message: 'success!',
+  });
+  // const listingId = req.params.listingId;
+  // // console.log(req.files);
+  // // console.log(JSON.stringify(req.body));
+  // console.log(req.body);
+  // console.log(req.files);
+  // console.log(req.file);
+  // // const blob = req.body;
+  // // const blob = req.body.blob;
+  // // console.log(blob);
+  // // blob.lastModifiedDate = Date.now();
+  // // blob.name = `${listingId}_${Date.now()}.jpeg`
+  // // console.log(blob);
+  // // const file = new File([blob], `${listingId}_${Date.now()}.jpeg`);
+  // try {
+  //   const s3 = new AWS.S3(s3Config);
+  //   const params = {
+  //     Bucket: "furni-s3-bucket",
+  //     // Key: `listingPics/${file.name}`,
+  //     Key: `listingPics/${blob.name}`,
+  //     // Body: file,
+  //     Body: req.body.photo,
+  //     ACL: "public-read",
+  //     ContentType: "image/jpeg",
+  //     ContentDisposition: "attachment",
+  //   };
+  //   const data = await s3.upload(params).promise();
+  //   await pool.query(listingsQueries.insertPic({ listingId, picUrls: [data.Location] }));
+  //   return res.json({
+  //     success: true,
+  //     message: "Picutres uploaded successfully"
+  //   })
+  // } catch (err) {
+  //   console.log(err);
+  //   return res.status(500).json({
+  //     success: false,
+  //     message: "Server error"
+  //   })
+  // }
 }
 
 async function getListings(req, res) {
