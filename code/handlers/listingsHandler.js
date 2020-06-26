@@ -1,15 +1,15 @@
 const pool = require('../database');
 const listingsQueries = require('../queries/listingsQueries');
 const AWS = require('aws-sdk');
-const fs = require('fs');
-const util = require('util');
-const writeFile = util.promisify(fs.writeFile);
+const { v4: uuidv4 } = require('uuid');
+require('dotenv').config();
 
 const s3Config = {
   region: process.env.S3_REGION,
-  accessKeyId: process.env.ACCESS_KEY_ID,
-  secretAccessKey: process.env.SECRET_ACCESS_KEY,
+  accessKeyId: process.env.S3_ACCESS_KEY_ID,
+  secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
 };
+const s3 = new AWS.S3(s3Config);
 
 async function createListing(req, res) {
   const { sellerId, title, timeCreated, price, itemCondition, description, category, deliveryOption } = req.body;
@@ -36,52 +36,6 @@ async function createListing(req, res) {
       message: "DB error"
     });
   }
-}
-
-async function addListingPic(req, res) {
-  console.log('file', req.files);
-  console.log('body', req.body);
-  res.status(200).json({
-    message: 'success!',
-  });
-  // const listingId = req.params.listingId;
-  // // console.log(req.files);
-  // // console.log(JSON.stringify(req.body));
-  // console.log(req.body);
-  // console.log(req.files);
-  // console.log(req.file);
-  // // const blob = req.body;
-  // // const blob = req.body.blob;
-  // // console.log(blob);
-  // // blob.lastModifiedDate = Date.now();
-  // // blob.name = `${listingId}_${Date.now()}.jpeg`
-  // // console.log(blob);
-  // // const file = new File([blob], `${listingId}_${Date.now()}.jpeg`);
-  // try {
-  //   const s3 = new AWS.S3(s3Config);
-  //   const params = {
-  //     Bucket: "furni-s3-bucket",
-  //     // Key: `listingPics/${file.name}`,
-  //     Key: `listingPics/${blob.name}`,
-  //     // Body: file,
-  //     Body: req.body.photo,
-  //     ACL: "public-read",
-  //     ContentType: "image/jpeg",
-  //     ContentDisposition: "attachment",
-  //   };
-  //   const data = await s3.upload(params).promise();
-  //   await pool.query(listingsQueries.insertPic({ listingId, picUrls: [data.Location] }));
-  //   return res.json({
-  //     success: true,
-  //     message: "Picutres uploaded successfully"
-  //   })
-  // } catch (err) {
-  //   console.log(err);
-  //   return res.status(500).json({
-  //     success: false,
-  //     message: "Server error"
-  //   })
-  // }
 }
 
 async function getListings(req, res) {
@@ -169,11 +123,56 @@ async function deleteListing(req, res) {
   }
 }
 
+async function createS3SignedUrl(req, res) {
+  const params = {
+    Bucket: process.env.S3_BUCKET_NAME,
+    Key: uuidv4(),
+    ACL: "public-read",
+    ContentEncoding: "base64",
+    ContentType: "image/jpeg",
+    ContentDisposition: "attachment",
+    Expires: 60 * 60 // seconds
+  };
+  try {
+    const url = await s3.getSignedUrlPromise('putObject', params);
+    return res.json({
+      success: true,
+      message: "Presigned URL for S3 upload generated successfully",
+      data: url
+    })
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      success: false,
+      message: "Server error"
+    })
+  }
+}
+
+async function insertPic(req, res) {
+  const listingId = req.params.listingId;
+  const picUrl = req.body.picUrl;
+  try {
+    await pool.query(listingsQueries.insertPic({ listingId, picUrl }));
+    return res.json({
+      success: true,
+      message: "Photo attached to listing successfully"
+    })
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      success: false,
+      message: "Server error"
+    })
+  }
+}
+
 module.exports = {
   createListing,
-  addListingPic,
   getListings,
   getListing,
   editListing,
-  deleteListing
+  deleteListing,
+  createS3SignedUrl,
+  insertPic
 };

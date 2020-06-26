@@ -62,6 +62,10 @@ function deletePics(listingId) {
   return listingId && `DELETE FROM listingPics WHERE listingId = '${listingId}';`
 }
 
+function insertPic({listingId, picUrl}) {
+  return (listingId && picUrl) && `INSERT INTO listingPics (listingId, picUrl) VALUE ('${listingId}', '${picUrl}');`;
+}
+
 module.exports = {
   getListings,
   getListing,
@@ -69,5 +73,6 @@ module.exports = {
   editListing,
   deleteListing,
   insertPics,
-  deletePics
+  deletePics,
+  insertPic
 }
