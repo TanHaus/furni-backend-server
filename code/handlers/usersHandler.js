@@ -61,8 +61,8 @@ async function createUser(req, res) {
 
 async function editUser(req, res) {
   const userId = req.params.userId;
-  const { email, name, profilePicUrl } = req.body;
-  const queryString = usersQueries.editUser({ userId, email, name, profilePicUrl });
+  const { name, profilePicUrl } = req.body;
+  const queryString = usersQueries.editUser({ userId, name, profilePicUrl });
   if (!queryString) 
     return res.json({
       success: false,

@@ -26,7 +26,7 @@ async function handleLoginRequest(req, res) {
     const user = results[0];
     const match = await checkPassword(password, user.password);
     if (!match) {
-      return res.res(400).json({
+      return res.status(400).json({
         success: false,
         message: "Invalid input"
       })

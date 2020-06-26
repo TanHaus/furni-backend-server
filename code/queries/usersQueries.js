@@ -14,9 +14,8 @@ function createUser({userId, email, password, name, profilePicUrl}) {
 }
 
 function editUser({userId, email, name, profilePicUrl}) {
-  if (!userId || !(email || name || profilePicUrl)) return '';
+  if (!userId || !(name || profilePicUrl)) return '';
   let queryString = "UPDATE users SET";
-  if (email) queryString += ` email = '${email}',`;
   if (name) queryString += ` name = '${name}',`;
   if (profilePicUrl) queryString += ` profilePicUrl = '${profilePicUrl}',`;
   queryString = queryString.slice(0, -1) + ` WHERE userId = '${userId}';`;
