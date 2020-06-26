@@ -4,9 +4,9 @@ function getUser({userId, email}) {
   return '';
 }
 
-function createUser({email, password, name, profilePicUrl}) {
-  if (!(email && password && name)) return '';
-  let queryString = `INSERT INTO users (email, password, name, profilePicUrl) VALUES ('${email}', '${password}', '${name}',`;
+function createUser({userId, email, password, name, profilePicUrl}) {
+  if (!(userId, email && password && name)) return '';
+  let queryString = `INSERT INTO users (userId, email, password, name, profilePicUrl) VALUES ('${userId}', '${email}', '${password}', '${name}',`;
   if (profilePicUrl) queryString += ` '${profilePicUrl}',`;
   else queryString += " NULL,";
   queryString = queryString.slice(0, -1) + ");";

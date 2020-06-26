@@ -1,5 +1,6 @@
 const pool = require('../database');
 const usersQueries = require('../queries/usersQueries');
+const { v4: uuidv4 } = require('uuid');
 const generateHash = require('../utility').generateHash;
 
 async function getUser(req, res) {
@@ -29,8 +30,9 @@ async function getUser(req, res) {
 
 async function createUser(req, res) {
   const { email, password, name, profilePicUrl } = req.body;
+  const userId = uuidv4();
   const hashedPassword = password && await generateHash(password);
-  const queryString = usersQueries.createUser({ email, password: hashedPassword, name, profilePicUrl });
+  const queryString = usersQueries.createUser({ userId, email, password: hashedPassword, name, profilePicUrl });
   if (!queryString) 
     return res.json({
       success: false,
