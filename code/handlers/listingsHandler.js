@@ -11,8 +11,35 @@ const s3Config = {
 };
 const s3 = new AWS.S3(s3Config);
 
+// async function createListing(req, res) {
+//   const { sellerId, title, timeCreated, price, itemCondition, description, category, deliveryOption } = req.body;
+//   const createLisitngQueryString = listingsQueries.createListing({ sellerId, title, timeCreated, price, itemCondition, description, category, deliveryOption });
+//   if (!createLisitngQueryString) {
+//     return res.status(400).json({
+//       success: false,
+//       message: "Misisng input"
+//     })
+//   }
+//   try {
+//     const results = await pool.query(createLisitngQueryString);
+//     return res.json({
+//       success: true,
+//       message: "Listing created",
+//       data: {
+//         listingId: results.insertId
+//       }
+//     });
+//   } catch (err) {
+//     console.log(err);
+//     return res.status(500).json({
+//       success: false,
+//       message: "DB error"
+//     });
+//   }
+// }
+
 async function createListing(req, res) {
-  const { sellerId, title, timeCreated, price, itemCondition, description, category, deliveryOption } = req.body;
+  const { sellerId, title, timeCreated, price, itemCondition, description, category, deliveryOption, picUrls } = req.body;
   const createLisitngQueryString = listingsQueries.createListing({ sellerId, title, timeCreated, price, itemCondition, description, category, deliveryOption });
   if (!createLisitngQueryString) {
     return res.status(400).json({
@@ -22,12 +49,11 @@ async function createListing(req, res) {
   }
   try {
     const results = await pool.query(createLisitngQueryString);
+    const insertPicUrlsQueryString = listingsQueries.insertPics({listingId: results.insertId, picUrls});
+    if (insertPicUrlsQueryString) await pool.query(insertPicUrlsQueryString);
     return res.json({
       success: true,
-      message: "Listing created",
-      data: {
-        listingId: results.insertId
-      }
+      message: "Listing created"
     });
   } catch (err) {
     console.log(err);
@@ -124,7 +150,7 @@ async function deleteListing(req, res) {
 }
 
 async function createS3SignedUrl(req, res) {
-  const filename = uuidv4()
+  const filename = `${uuidv4()}.jpeg`;
   const params = {
     Bucket: process.env.S3_BUCKET_NAME,
     Key: filename,
