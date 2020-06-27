@@ -191,7 +191,7 @@ Payload: {
   "description": String,
   "category": String,
   "deliveryOption": String,
-  "pics": String
+  "picUrls": String
 },
 Response: {
   Success: {
@@ -295,6 +295,28 @@ Response: {
   Success: {
     "success": true,
     "message": String,
+  },
+  Failure: {
+    "success": false,
+    "message": String
+  }
+}
+```
+### 6. /listings/S3SignedUrl (POST)
+```javascript
+Header: {
+  "Content-Type": "application/json",
+  "Authorization": "Bearer ..."
+},
+Payload: {},
+Response: {
+  Success: {
+    "success": true,
+    "message": String,
+    "data": {
+      "signedUrl": String,
+      "fileLocation": String
+    }
   },
   Failure: {
     "success": false,

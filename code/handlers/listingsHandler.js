@@ -11,33 +11,6 @@ const s3Config = {
 };
 const s3 = new AWS.S3(s3Config);
 
-// async function createListing(req, res) {
-//   const { sellerId, title, timeCreated, price, itemCondition, description, category, deliveryOption } = req.body;
-//   const createLisitngQueryString = listingsQueries.createListing({ sellerId, title, timeCreated, price, itemCondition, description, category, deliveryOption });
-//   if (!createLisitngQueryString) {
-//     return res.status(400).json({
-//       success: false,
-//       message: "Misisng input"
-//     })
-//   }
-//   try {
-//     const results = await pool.query(createLisitngQueryString);
-//     return res.json({
-//       success: true,
-//       message: "Listing created",
-//       data: {
-//         listingId: results.insertId
-//       }
-//     });
-//   } catch (err) {
-//     console.log(err);
-//     return res.status(500).json({
-//       success: false,
-//       message: "DB error"
-//     });
-//   }
-// }
-
 async function createListing(req, res) {
   const { sellerId, title, timeCreated, price, itemCondition, description, category, deliveryOption, picUrls } = req.body;
   const createLisitngQueryString = listingsQueries.createListing({ sellerId, title, timeCreated, price, itemCondition, description, category, deliveryOption });
@@ -169,24 +142,6 @@ async function createS3SignedUrl(req, res) {
         signedUrl,
         fileLocation: `https://furni-s3-bucket.s3-ap-southeast-1.amazonaws.com/${filename}`
       }
-    })
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({
-      success: false,
-      message: "Server error"
-    })
-  }
-}
-
-async function insertPic(req, res) {
-  const listingId = req.params.listingId;
-  const picUrl = req.body.picUrl;
-  try {
-    await pool.query(listingsQueries.insertPic({ listingId, picUrl }));
-    return res.json({
-      success: true,
-      message: "Photo attached to listing successfully"
     })
   } catch (err) {
     console.log(err);
