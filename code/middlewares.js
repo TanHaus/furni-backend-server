@@ -16,7 +16,6 @@ function authentication(req, res, next) {
   const authorizationHeader = req.headers['authorization'] || '';
   const accessToken = authorizationHeader.startsWith('Bearer ') ? authorizationHeader.slice(7) : '';
   if (!accessToken) {
-    console.log('missing access token');
     return res.status(401).json({
       success: false,
       message: "Missing access token"

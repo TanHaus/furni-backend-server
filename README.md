@@ -263,14 +263,15 @@ Header: {
 Payload: {
   "sellerId": Integer,
   "title": String,
-  "timeCreated": Datetime,
+  "timeUpdated": !Datetime,
   "price": Decimal,
   "itemCondition": String,
   "description": String,
   "category": String,
   "deliveryOption": String,
-  "status": String, ('open', 'closed')
-  "picUrls": String
+  "status": String, ('open', 'closed'),
+  "picUrls": String,
+  "pics": String
 },
 Response: {
   Success: {
@@ -294,6 +295,28 @@ Response: {
   Success: {
     "success": true,
     "message": String,
+  },
+  Failure: {
+    "success": false,
+    "message": String
+  }
+}
+```
+### 6. /listings/S3SignedUrl (POST)
+```javascript
+Header: {
+  "Content-Type": "application/json",
+  "Authorization": "Bearer ..."
+},
+Payload: {},
+Response: {
+  Success: {
+    "success": true,
+    "message": String,
+    "data": {
+      "signedUrl": String,
+      "fileLocation": String
+    }
   },
   Failure: {
     "success": false,
