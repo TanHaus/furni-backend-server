@@ -1,15 +1,39 @@
-function getListings(q) {
-  return q 
-    ? `SELECT l.*, GROUP_CONCAT(listingPics.picUrl) AS picUrls 
-      FROM (SELECT * FROM listings WHERE title LIKE '%${q}%') l 
-      LEFT JOIN listingPics 
-      ON l.listingId = listingPics.listingId 
-      GROUP BY l.listingId;`
-    : `SELECT listings.*, GROUP_CONCAT(listingPics.picUrl) AS picUrls
-      FROM listings 
-      LEFT JOIN listingPics
-      ON listings.listingId = listingPics.listingId
-      GROUP BY listings.listingId;`
+function getListings({ q, condition, maxPrice, minPrice, sort }) {
+  let queryString = `SELECT * FROM listings `;
+  if (q || maxPrice || minPrice || condition) queryString += `WHERE `
+
+  if (q) { 
+    const arr = q.split(' ');
+    let newQuery = ``;
+    arr.forEach(element => {
+      newQuery += `title REGEXP "${element}" AND `
+    });
+    queryString += `${newQuery}`;
+  };
+  
+  if (condition) queryString += `itemCondition="${condition}" AND `;
+  if (maxPrice) queryString += `price<=${maxPrice} AND `;
+  if (minPrice) queryString += `price>=${minPrice} AND `;
+  if (q || maxPrice || minPrice || condition) queryString = queryString.slice(0, -4);
+
+  let orderString = ``;
+  if (sort) {
+    let [field, order] = sort.split('_');
+    if (order === 'ascending') {
+      order = 'ASC'
+    } else if (order === 'descending') {
+      order = 'DESC';
+    } else {
+      return '';
+    }
+    orderString += `ORDER BY ${field} ${order} `
+  }
+
+  return `SELECT l.*, GROUP_CONCAT(listingPics.picUrl) AS picUrls 
+          FROM (` + queryString + `) l 
+          LEFT JOIN listingPics
+          ON l.listingId = listingPics.listingId
+          GROUP BY l.listingId ` + orderString + `;`;
 }
 
 function getListing(listingId) {

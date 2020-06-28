@@ -37,10 +37,11 @@ async function createListing(req, res) {
   }
 }
 
+
 async function getListings(req, res) {
-  const q = req.query.q;
+  const { q, condition, minPrice, maxPrice, sort } = req.query;
   try {
-    const results = await pool.query(listingsQueries.getListings(q));
+    const results = await pool.query(listingsQueries.getListings({q, condition, minPrice, maxPrice, sort}));
     return res.json({
       success: true,
       message: "Listings retrieved successfully",
@@ -158,6 +159,5 @@ module.exports = {
   getListing,
   editListing,
   deleteListing,
-  createS3SignedUrl,
-  insertPic
+  createS3SignedUrl
 };
