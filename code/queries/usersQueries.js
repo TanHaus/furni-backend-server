@@ -27,7 +27,12 @@ function deleteUser(userId) {
 }
 
 function getUserListings(userId) {
-  return userId && `SELECT * FROM listings WHERE sellerId = '${userId}';`;
+  return userId && `
+    SELECT l.*, GROUP_CONCAT(p.picUrl) AS picUrls
+    FROM (SELECT * FROM listings WHERE listings.sellerId = '${userId}') l
+    LEFT JOIN listingPics p
+    ON l.listingId = p.listingId
+    GROUP BY l.listingId;`;
 }
 
 function getBuyerOffers(buyerId) {

@@ -13,7 +13,7 @@ function getOffersByListing({ listingId, buyerId }) {
 function createOffer({ buyerId, listingId, priceBidded, timeCreated }) {
   return (buyerId && listingId && priceBidded && timeCreated)
     ? `INSERT INTO offers (buyerId, listingId, priceBidded, timeCreated, status) 
-      VALUES ('${buyerId}', '${listingId}', '${priceBidded}', '${timeCreated}', 'pending');` // to do: change db default value for offer.status to 'pending' and remove the status value for this insert statement
+      VALUES ('${buyerId}', '${listingId}', '${priceBidded}', '${timeCreated}', 'pending');`
     : '';
 }
 
