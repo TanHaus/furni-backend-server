@@ -1,4 +1,5 @@
 const pool = require('../database');
+const reduceListings = require('../utility').reduceListings;
 const listingsQueries = require('../queries/listingsQueries');
 const AWS = require('aws-sdk');
 const { v4: uuidv4 } = require('uuid');
@@ -45,7 +46,7 @@ async function getListings(req, res) {
     return res.json({
       success: true,
       message: "Listings retrieved successfully",
-      data: results
+      data: reduceListings(results)
     })
   } catch (err) {
     console.log(err);
@@ -69,7 +70,7 @@ async function getListing(req, res) {
     return res.json({
       success: true,
       message: "Listing retrieved successfully",
-      data: results[0]
+      data: reduceListings(results)[0]
     })
   } catch (err) {
     console.log(err);

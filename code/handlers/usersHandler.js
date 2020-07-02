@@ -1,7 +1,7 @@
 const pool = require('../database');
 const usersQueries = require('../queries/usersQueries');
 const { v4: uuidv4 } = require('uuid');
-const generateHash = require('../utility').generateHash;
+const { generateHash, reduceListings } = require('../utility');
 
 async function getUser(req, res) {
   const userId = req.params.userId;
@@ -107,7 +107,7 @@ async function getUserListings(req, res) {
     return res.json({
       success: true,
       message: "Listings retrieved successfully",
-      data: results
+      data: reduceListings(results)
     });
   } catch (err) {
     console.log(err);
