@@ -30,21 +30,19 @@ function getListings({ q, condition, maxPrice, minPrice, sort }) {
   }
 
   return `
-    SELECT l.*, GROUP_CONCAT(listingPics.picUrl) AS picUrls 
-    FROM (` + queryString + `) l 
-    LEFT JOIN listingPics
-    ON l.listingId = listingPics.listingId
-    GROUP BY l.listingId ` + orderString + `;
-  `;
+    SELECT l.*, p.picUrl AS picUrls 
+    FROM (${queryString}) l 
+    LEFT JOIN listingPics p
+    ON l.listingId = p.listingId ${orderString};`;
 }
 
 function getListing(listingId) {
   if (!(listingId)) return '';
   return `
-    SELECT listings.*, GROUP_CONCAT(listingPics.picUrl) AS picUrls 
-    FROM (SELECT * FROM listings WHERE listings.listingId = '${listingId}') listings 
-    LEFT JOIN listingPics ON listings.listingId = listingPics.listingId 
-    GROUP BY listings.listingId;
+    SELECT l.*, p.picUrl AS picUrls 
+    FROM (SELECT * FROM listings WHERE listingId = '${listingId}') l 
+    LEFT JOIN listingPics p 
+    ON l.listingId = p.listingId;
   `;
 }
 

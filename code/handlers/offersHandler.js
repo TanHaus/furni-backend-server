@@ -38,12 +38,6 @@ async function getOffersByListing(req, res) {
   }
   try {
     const results = await pool.query(queryString);
-    if (results.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid input"
-      });
-    }
     return res.json({
       success: true,
       message: "Offers retrieved successfully",

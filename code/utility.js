@@ -23,7 +23,23 @@ function checkPassword(password, hash) {
   })
 }
 
+function reduceListings(rows) {
+  const results = rows.reduce((acc, row) => {
+    const idx = acc.findIndex(x => x.listingId === row.listingId);
+    if (idx === -1) {
+      row.picUrls = [row.picUrls];
+      acc.push(row);
+    } else {
+      const targetListing = acc[idx];
+      targetListing.picUrls.push(row.picUrls);
+    }
+    return acc;
+  }, []);
+  return results;
+}
+
 module.exports = { 
   generateHash, 
-  checkPassword
+  checkPassword,
+  reduceListings
 }
