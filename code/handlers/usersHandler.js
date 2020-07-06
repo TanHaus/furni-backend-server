@@ -6,7 +6,7 @@ const { generateHash, reduceListings } = require('../utility');
 async function getUser(req, res) {
   const userId = req.params.userId;
   try {
-    const results = await pool.query(usersQueries.getUser(userId));
+    const results = await pool.query(usersQueries.getUser({userId}));
     if (results.length === 0) 
       return res.status(404).json({
         success: false,
