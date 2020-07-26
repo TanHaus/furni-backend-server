@@ -143,7 +143,7 @@ async function getUserPreferences(req, res) {
     return res.json({
       success: true,
       message: "Preferences retrieved successfully",
-      data: results
+      data: results.map(tag => tag.tagId)
     });
   } catch (err) {
     console.log(err);
@@ -154,8 +154,23 @@ async function getUserPreferences(req, res) {
   }
 }
 
-async function editUserPreferences(req, res) {
-
+async function updateUserPreferences(req, res) {
+  const userId = req.params.userId;
+  const tagIds = req.body.tagIds;
+  try {
+    await pool.query(usersQueries.deleteUserPreferences(userId));
+    await pool.query(usersQueries.insertUserPreferences({ userId, tagIds }));
+    return res.json({
+      success: true,
+      message: "Preferences updated successfully",
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      success: false,
+      message: "DB error"
+    });
+  }
 }
 
 module.exports = {
@@ -166,5 +181,5 @@ module.exports = {
   getUserListings,
   getBuyerOffers,
   getUserPreferences,
-  editUserPreferences
+  updateUserPreferences
 }

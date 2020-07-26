@@ -90,10 +90,9 @@ async function handleRefreshToken(req, res) {
       }
     });
   } catch (err) {
-    console.log(err);
     return res.status(500).json({
       success: false,
-      message: err.message
+      message: "DB error"
     });
   }
 }
@@ -109,10 +108,9 @@ async function handleDeleteToken(req, res) {
       message: "Token deleted successfully"
     });
   } catch (err) {
-    console.log(err);
     return res.status(500).json({
       success: false,
-      message: err.message
+      message: "DB error"
     })
   }
 }

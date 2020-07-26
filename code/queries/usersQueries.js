@@ -39,7 +39,21 @@ function getBuyerOffers(buyerId) {
 }
 
 function getUserPreferences(userId) {
-  return `SELECT * FROM userPreferences WHERE userId = '${userId}';`;
+  return `SELECT tagId FROM userPreferences WHERE userId = '${userId}';`;
+}
+
+function insertUserPreferences({ userId, tagIds }) {
+  if (!(userId && tagIds && tagIds.length)) return '';
+  const values = tagIds.reduce((acc, cur) => {
+    const curVal = `('${userId}', '${cur}')`;
+    if (!acc) return curVal;
+    return `${acc}, ${curVal}`;
+  }, '');
+  return `INSERT INTO userPreferences (userId, tagId) VALUES ${values};`;
+}
+
+function deleteUserPreferences(userId) {
+  return `DELETE FROM userPreferences WHERE userId = '${userId}';`
 }
 
 module.exports = {
@@ -49,5 +63,7 @@ module.exports = {
   deleteUser,
   getUserListings,
   getBuyerOffers,
-  getUserPreferences
+  getUserPreferences,
+  insertUserPreferences,
+  deleteUserPreferences
 }

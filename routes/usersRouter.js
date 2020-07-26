@@ -8,7 +8,7 @@ router.use('/:userId', authentication);
 router.get('/:userId/listings', usersHandler.getUserListings);
 router.get('/:userId/offers', usersHandler.getBuyerOffers);
 router.get('/:userId/preferences', usersHandler.getUserPreferences);
-router.put('/:userId/preferences', usersHandler.editUserPreferences);
+router.put('/:userId/preferences', usersHandler.updateUserPreferences);
 router.get('/:userId', usersHandler.getUser);
 router.put('/:userId', usersHandler.editUser);
 router.delete('/:userId', usersHandler.deleteUser);
